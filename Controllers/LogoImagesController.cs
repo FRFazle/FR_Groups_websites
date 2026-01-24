@@ -1,4 +1,5 @@
-﻿using FR_Groups_websites.Interface;
+﻿using FR_Groups_websites.Dto;
+using FR_Groups_websites.Interface;
 using FR_Groups_websites.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,11 +41,11 @@ namespace FR_Groups_websites.Controllers
             return Ok(logo);
         }
 
-        // POST: api/LogoImages/upload
         [HttpPost("upload")]
-        public async Task<IActionResult> UploadLogo([FromForm] IFormFile file)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Upload([FromForm] LogoUploadDto dto)
         {
-            if (file == null || file.Length == 0)
+            if (dto.File == null || dto.File.Length == 0)
                 return BadRequest("No file uploaded");
 
             var uploadsPath = Path.Combine(_env.WebRootPath, "uploads");
@@ -52,13 +53,11 @@ namespace FR_Groups_websites.Controllers
             if (!Directory.Exists(uploadsPath))
                 Directory.CreateDirectory(uploadsPath);
 
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(dto.File.FileName)}";
             var filePath = Path.Combine(uploadsPath, fileName);
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await dto.File.CopyToAsync(stream);
 
             var logo = new LogoImage
             {
