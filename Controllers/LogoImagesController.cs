@@ -9,10 +9,12 @@ namespace FR_Groups_websites.Controllers
     public class LogoImagesController : ControllerBase
     {
         private readonly ILogoImageService _service;
+        private readonly IWebHostEnvironment _env;
 
-        public LogoImagesController(ILogoImageService service)
+        public LogoImagesController(ILogoImageService service, IWebHostEnvironment env)
         {
             _service = service;
+            _env = env;
         }
 
         // GET: api/LogoImages
@@ -34,6 +36,36 @@ namespace FR_Groups_websites.Controllers
 
             if (logo == null)
                 return NotFound("Logo not found");
+
+            return Ok(logo);
+        }
+
+        // POST: api/LogoImages/upload
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadLogo([FromForm] IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("No file uploaded");
+
+            var uploadsPath = Path.Combine(_env.WebRootPath, "uploads");
+
+            if (!Directory.Exists(uploadsPath))
+                Directory.CreateDirectory(uploadsPath);
+
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var filePath = Path.Combine(uploadsPath, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var logo = new LogoImage
+            {
+                ImagePath = "/uploads/" + fileName
+            };
+
+            await _service.AddAsync(logo);
 
             return Ok(logo);
         }
