@@ -68,7 +68,7 @@ namespace FR_Groups_websites.Controllers
 
             return Ok(logo);
         }
-
+        //Done
         // POST: api/LogoImages
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] LogoImage logoImage)
