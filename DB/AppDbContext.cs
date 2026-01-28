@@ -10,7 +10,7 @@ namespace FR_Groups_websites.DB
 
         public DbSet<LogoImage> logoImages { get; set; } = null!;
 
-
+        public DbSet<Contact> contacts { get; set; } = null!;
 
 
     }

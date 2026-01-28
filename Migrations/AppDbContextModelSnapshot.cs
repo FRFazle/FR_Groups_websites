@@ -21,6 +21,32 @@ namespace FR_Groups_websites.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("FR_Groups_websites.Models.Contact", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("T_Contacts");
+                });
+
             modelBuilder.Entity("FR_Groups_websites.Models.LogoImage", b =>
                 {
                     b.Property<int>("ID")
@@ -35,7 +61,46 @@ namespace FR_Groups_websites.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("logoImages");
+                    b.ToTable("T_LogoImages");
+                });
+
+            modelBuilder.Entity("FR_Groups_websites.Models.Contact", b =>
+                {
+                    b.OwnsOne("FR_Groups_websites.Models.SocialLinks", "SocialLinks", b1 =>
+                        {
+                            b1.Property<int>("ContactId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Facebook")
+                                .IsRequired()
+                                .HasMaxLength(255)
+                                .HasColumnType("nvarchar(255)");
+
+                            b1.Property<string>("LinkedIn")
+                                .IsRequired()
+                                .HasMaxLength(255)
+                                .HasColumnType("nvarchar(255)");
+
+                            b1.Property<string>("Twitter")
+                                .IsRequired()
+                                .HasMaxLength(255)
+                                .HasColumnType("nvarchar(255)");
+
+                            b1.Property<string>("YouTube")
+                                .IsRequired()
+                                .HasMaxLength(255)
+                                .HasColumnType("nvarchar(255)");
+
+                            b1.HasKey("ContactId");
+
+                            b1.ToTable("T_Contacts");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ContactId");
+                        });
+
+                    b.Navigation("SocialLinks")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
